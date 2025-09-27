@@ -6,6 +6,10 @@ import sys
 import shutil
 import time
 
+# ---------------- CLEAR FUNCTION ----------------
+def clear_ter():
+    os.system('cls' if os.name == 'nt' else 'clear')  # this is for clear terminal
+
 #------------------- title part -----------------
 def print_app_title():
     title = " QUIZ APPLICATION "
@@ -79,7 +83,7 @@ def load_users():
     if os.path.exists("src/dataBase.json"):
         with open("src/dataBase.json", "r") as f:
             return json.load(f)
-    return []
+    # return []
 
 
 def save_users(users):
@@ -88,46 +92,98 @@ def save_users(users):
 
 #  ------------REGISTER PART-----------------
 def register_user():
-    users = load_users()
+    user = load_users()
 
     while True:   # keep asking until unique username
         username = input("Enter username: ")
 
         # check if username already exists
-        if any(user["username"] == username for user in users):
+        if username in user["users_data"]:
             print("❌ This username already exists. Try another one.\n")
         else:
             break   # ✅ unique username found
 
     password = set_password()   # ✅ this will return the password
 
-    # Add new user
-    user_data = {"username": username, "password": password}
-    users.append(user_data)
-    save_users(users)
-    print(user_data)
+    # Add new user with progress
+    user["users_data"][username] = {
+        "password": password,
+        "progress": {
+            "time_spent":0,
+            "score": 0,
+            "attempt":0,
+            "correct" : 0,
+            "incorrect" : 0,
+            "percentage" : 0
+        }
+        }
+    save_users(user)
     print(f"✅ User '{username}' registered successfully!")
+    time.sleep(1.5)
 
 
 #  ------------LOGIN PART-------------------
 def login_user():
     print("\n--- Login your account ---")
-    users = load_users()
-    username = input("Enter username: ")
-    password = input("Enter password: ")
-
-    for user in users:
-        if user["username"] == username and user["password"] == password:
+    user = load_users()
+    while True :
+        global username
+        username = input("Enter username: ")
+        if username not in user["users_data"] :
+            print("\tuser not found \n\tEnter valid username")
+        else:
+            break
+    while True :
+        password = input("Enter password: ")
+        if user["users_data"][username]["password"] != password:
+            print("password is incorret\nEnter valid password")
+        else :
             print("🎉 Login successful! \n")
             time.sleep(1)
-            return True   # ✅ login success
-    print("❌ Invalid username or password.")
-    return False   # ❌ login failed
+            return True  
 
-# ---------------- CLEAR FUNCTION ----------------
-def clear_ter():
-    os.system('cls' if os.name == 'nt' else 'clear')  # this is for clear terminal
+#  ------------progress-------------------
+def update_progrss(duration,score,asked):
+    data = load_users()
+    sub = data["users_data"][username]["progress"]
+    sub["score"] += score
+    sub["time_spent"] += duration
+    sub["attempt"] += asked
+    sub["correct"] += score
+    sub["incorrect"] += asked - score
+    sub["percentage"] = round((sub["score"])/(sub["attempt"])*100,2)
 
+    save_users(data)
+
+
+def show_progress():
+    data = load_users()
+    clear_ter()
+    sub = data["users_data"][username]["progress"] # base index
+    secound = sub["time_spent"]
+    h = secound // 3600
+    m = (secound % 3600) // 60
+    s = (secound % 60)
+    print(f'Hi,{username} ')
+    print(f"You spent {h : .0f} hour ,{m : .0f} minute ,{s : .0f} secound in our application")
+    print(f"Your score is {sub["score"]}")
+    print(f"You attempt total {sub["attempt"]} question")
+    print(f"Your given answer is correct for {sub["correct"]} question")
+    print(f"Your given answer is incorrect for {sub["incorrect"]} question")
+    print(f"Your percentage {sub["percentage"]}%\n")
+
+# ---------------- Leaderboard----------------
+def show_leaderboard():
+    data = load_users()
+    users = data["users_data"]
+    if not users :
+        print("No user found")
+        return
+    sorted_users = sorted(users.items(),key = lambda x : x[1]["progress"]["score"],reverse=True)
+    print("\n----------------Leaderboard----------------")
+    for i,(user,info) in enumerate(sorted_users,start=1):
+        print(f"{i}. {user} - {info["progress"]["score"]} points")
+    print("")
 
 # ---------------- INPUT WITH TIMEOUT ----------------
 def input_with_timeout(prompt, timeout=30):
@@ -168,9 +224,10 @@ tech = "src/Technology.xlsx"
 science = "src/Science.xlsx"
 sport = "src/SPORTS.xlsx"
 
-def get_question(data):
-    row = data.sample().iloc[0]
-    return row  # pick one random row
+def get_question(data,total_questions):
+    new_data = data.sample(n=total_questions)
+    data_shuffled = new_data.sample(frac=1) # shuffle the data set
+    return data_shuffled 
 
 
 def print_question(row):
@@ -178,22 +235,18 @@ def print_question(row):
     print(f"A. {row['Option A']}\nB. {row['Option B']}\nC. {row['Option C']}\nD. {row['Option D']}")
 
 
-def check_answer(row, user_answer):
-    correct = str(row["Answer"]).strip().upper()
-    user = user_answer.strip().upper()
-    if user == correct:
-        print("✅ Correct!")
-    else:
-        option_text = row.get(f"Option {correct}", "Unknown")
-        print(f"❌ Wrong! The correct answer is: {correct}. {option_text}")
-
-
-def load_excel(path: str):
+def load_excel(path: str, level : int):
     if not os.path.exists(path):
         print(f"Quiz file not found: {path}")
         return None
     try:
         df = pd.read_excel(path)
+        level = {
+            1 : "Hard",
+            2 : "Medium",
+            3 : "Easy"
+        }[level]
+        df = df[df["Difficulty"] == level] # filter data according to level
     except Exception as e:
         print("Error loading quiz file:", e)
         return None
@@ -221,13 +274,20 @@ def check_answer(row, user_answer):
         option_text = row.get(f"Option {correct}", "Unknown")
         print(f"❌ Wrong! The correct answer is: {correct}. {option_text}")
         return False
-
+    
+def choose_level():
+    print("choose a level : ")
+    print("1. Hard\n2. Medium\n3. Easy")
+    level = None
+    while level not in (1,2,3):
+        level = int(input("Enter 1, 2 or 3 :"))
+    return level
 
 # ---------------- QUIZ FUNCTION ----------------
 def start_quiz():
     clear_ter()         # clear reg and login part 
     print_app_title()
-    print("START YOUR QUIZ , 𝐵𝑒𝓈𝓉 𝑜𝒻 𝓁𝓊𝒸𝓀")
+    print(f"hi, {username} let's START YOUR QUIZ , 𝐵𝑒𝓈𝓉 𝑜𝒻 𝓁𝓊𝒸𝓀")
     print("Choose a quiz category:")
     print("1. Bollywood")
     print("2. History")
@@ -238,19 +298,24 @@ def start_quiz():
 
     category_name = ""  
     if choice == "1":
-        df = load_excel(bolly)
+        level = choose_level()
+        df = load_excel(bolly,level)
         category_name = "🎬 Bollywood Questions"
     elif choice == "2":
-        df = load_excel(histry)
+        level = choose_level()
+        df = load_excel(histry,level)
         category_name = "📜 History Questions"
     elif choice == "3":
-        df = load_excel(tech)
+        level = choose_level()
+        df = load_excel(tech,level)
         category_name = "💻 Technology Questions"
     elif choice == "4":
-        df = load_excel(science)
+        level = choose_level()
+        df = load_excel(science,level)
         category_name = "🔬 Science Questions"
     elif choice == "5":
-        df = load_excel(sport)
+        level = choose_level()
+        df = load_excel(sport,level)
         category_name = "⚽ Sports Questions"
     else:
         print("Invalid choice.")
@@ -260,6 +325,9 @@ def start_quiz():
         return
 
     # ---------------- Loop until user says NO ----------------
+    asked = 0
+    score = 0
+    start = time.time()
     while True:
         # ---------------- Choose number of questions ----------------
         while True:
@@ -274,31 +342,30 @@ def start_quiz():
 
         print(f"\n📌 You chose to practice {total_qs} questions.\n")
         # time.sleep(1)
-
+        qno = 0
         # ---------------- Run the quiz ----------------
-        asked = 0
-        score = 0
-        while asked < total_qs:
-            que = get_question(df)
+        que_set = get_question(df,total_qs)
+        for _ ,que in que_set.iterrows():
             clear_ter()
             print_app_title()
+            print(f"Hi {username} let's start quiz")
             print(category_name)
-            print(f"Question {asked+1} of {total_qs}")
+            print(f"Question {qno+1} of {total_qs}")
 
             # 🔹 Show timer message before question
-            print("\n⏳ Your time is starting... 10 sec!\n")
 
             # print the question
             print_question(que)
 
             # ⏳ timer input (10 sec)
-            user_answer = input_with_timeout("Your answer (A/B/C/D or Q to quit): ", timeout=10)
+            user_answer = input_with_timeout("Enter your answer (A/B/C/D or Q to quit): ", timeout=30)
 
             if user_answer is None:   # timeout
                 print("❌ You missed the question.")
                 print("-" * 40)
                 time.sleep(1)
                 asked += 1
+                qno += 1
                 continue
 
             user_answer = user_answer.strip()
@@ -308,24 +375,26 @@ def start_quiz():
 
             if check_answer(que, user_answer):   # ✅ now returns True/False
                 score += 1
-
+                
             print("-" * 40)
-            time.sleep(1)
+            time.sleep(1.5)
             asked += 1
+            qno += 1
 
         # ---------------- Final score ----------------
-        print(f"\n🏆 You got {score} out of {total_qs} correct!\n")   # ✅ now works
-
+        print(f"\n🏆 You got {score} out of {asked} correct!\n")   # ✅ now works
+    
         # ---------------- Ask play again ----------------
         play_again = input("Do you want to play again? (Y/N): ").strip().lower()
         if play_again != "y":
             print("\n👋 Thank you for playing! Goodbye!\n")
+            end = time.time()
+            duration = end - start # calculate spent time
+            update_progrss(duration,score,asked)
             break
 
-
 # ---------------- MAIN MENU ----------------
-def main_menu():
-    # start_quiz()
+def login_page():
     while True:
         clear_ter()
         print_app_title()
@@ -334,20 +403,46 @@ def main_menu():
         print("2. Login")
         print("3. Exit")
         choice = input("Choose option (1/2/3): ")
-
         if choice == "1":
             register_user()
         elif choice == "2":
-            if login_user():      # ✅ only start quiz if login successful
-                start_quiz()
-            else:
-                continue
+            login_user()
+            return True
         elif choice == "3":
             print("👋 Exiting... Goodbye!")
             break
         else:
             print("❌ Invalid choice, try again.")
+            time.sleep(1)
 
+
+# ---------------- MAIN MENU ----------------
+def main_menu():
+    # global username
+    # username = "bubai"
+    # print("1. Play Quiz\n2. show progress")
+    # choice = input("Choose option (1/2): ")
+    # if choice == 1:
+    #     start_quiz()
+    # else :
+    #     show_progress()
+    
+    if login_page() :  #user go to the main page when successfully login
+        while True:
+            print("1. Play Quiz\n2. show progress\n3. Show Leaderboard\n4. exit")
+            choice = int(input("Choose option (1,2,3 or 4): "))
+            if choice == 1:
+                start_quiz() 
+            elif choice == 2 :
+                show_progress()
+            elif choice == 3 :
+                show_leaderboard()
+            elif choice == 4 :
+                print("👋 Exiting... Goodbye!")
+                break
+            else :
+                print("❌ invalid choice Try again")
+                time.sleep(1)
 
 
 

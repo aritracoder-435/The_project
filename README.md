@@ -13,10 +13,12 @@ Users can answer multiple-choice questions, get instant feedback, and see their 
 ## ✨ Features
 
 - ✅ User login & registration
-- ✅ Multiple-choice questions  
-- ✅ Each Question has a timer 
+- ✅ Multiple-choice questions with level 
+- ✅ Each Question has a timer  
 - ✅ Instant feedback on answers
 - ✅ Score tracking  
+- ✅ show simple progrss
+- ✅ Leaderboard
 
 ---
 

@@ -1,22 +1,26 @@
-[
-    {
-        "username": "kajal",
-        "password": "kajal12**K"
-    },
-    {
-        "username": "aritra",
-        "password": "aritraAA45**"
-    },
-    {
-        "username": "Aritra",
-        "password": "Aritra4*"
-    },
-    {
-        "username": "Bishal12@",
-        "password": "Bishal12@*"
-    },
-    {
-        "username": "bubai",
-        "password": "Bubai@2025"
+{
+    "users_data": {
+        "aritra": {
+            "password": "Aritra@2025",
+            "progress": {
+                "time_spent": 0,
+                "score": 0,
+                "attempt": 0,
+                "correct": 0,
+                "incorrect": 0,
+                "percentage": 0
+            }
+        },
+        "bubai": {
+            "password": "Bubai@2025",
+            "progress": {
+                "time_spent": 146.60452246665955,
+                "score": 7,
+                "attempt": 18,
+                "correct": 7,
+                "incorrect": 11,
+                "percentage": 38.89
+            }
+        }
     }
-]
+}
