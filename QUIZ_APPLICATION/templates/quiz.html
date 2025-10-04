@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="quiz-box">
+  <form id="quizForm" method="POST" action="/quiz">
+    <h1>Quiz Time!</h1>
+    <div class="tq">
+      <div class="qno">Question No : {{q_no + 1}} of {{total_q}} </div>
+      <div class="timer">
+      Time Left: <span id="countdown">{{remaining}} seconds</span>
+      </div>
+    </div>
+    <div class="question-box">
+      <p class="question">{{question}}</p>
+      <ul class="options">
+        <li><input type="radio" id = "optaion1" value="A#{{op1}}" name="answer" {% if u_answer | string == op1 | string %} checked{% endif %}><label for="optaion1">{{op1}}</label> </li>
+        <li><input type="radio" id = "optaion2" value="B#{{op2}}" name="answer" {% if u_answer | string == op2 | string %} checked{% endif %}><label for="optaion2">{{op2}}</label></li>
+        <li><input type="radio" id = "optaion3" value="C#{{op3}}" name="answer" {% if u_answer | string == op3 | string %} checked{% endif %}><label for="optaion3">{{op3}}</label></li>
+        <li><input type="radio" id = "optaion4" value="D#{{op4}}" name="answer" {% if u_answer | string == op4 | string %} checked{% endif %}><label for="optaion4">{{op4}}</label></li>
+      </ul>
+    </div>
+    <div class="navigation">
+      <button type="submit" name="prev" class="prev"  {% if q_no == 0 %} disabled {% endif %}>Previous</button>
+      <button type="submit" name="next" class="next" {% if q_no == (total_q - 1) %} id="finish" {% else %} {% endif %}  > 
+        {% if q_no == total_q -1 %} Finish
+        {% else %}
+          Next
+        {% endif %}
+      </button>
+    </div>
+  </form>
+</div>
+
+{% endblock %}
+{% block script %}
+<script>
+  window.onload = () =>{
+    let timeLeft = {{remaining}}; //alright
+    const timer = setInterval(() => {
+        if (timeLeft == 0) {
+            clearInterval(timer);
+            document.getElementById("countdown").innerHTML = "Time's up!";
+
+            document.getElementById("quizForm").submit(); // auto-submit
+        } else {
+            document.getElementById("countdown").innerHTML = `${timeLeft} seconds`;
+            timeLeft--;
+        }
+    }, 1000);
+  };
+</script>
+{% endblock %}

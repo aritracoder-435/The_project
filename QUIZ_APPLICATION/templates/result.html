@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <form method="POST" action="/result">
+    <div class="quiz-box">
+      <h1>Your Result</h1>
+      <div class="question-box">
+        <p id="score">Your Score : {{score}} / {{total_q}}<br>Time Take : {{time_take}} secounds</p>
+        <div class="result ">
+          {% for question in questions %}
+            <div class="que {{ 'correct' if question['answer'][1] | string  == u_ans[loop.index - 1][1] | string else 'incorrect' }}">
+              <div>Q{{loop.index}}. {{question['question']}}</div>
+              <div class="opti">
+                <div>Options : </div>
+                <div>
+                  <div>A. {{question['options'][0]}}</div>
+                  <div>B. {{question['options'][1]}}</div>
+                  <div>C. {{question['options'][2]}}</div>
+                  <div>D. {{question['options'][3]}}</div>
+                </div>
+              </div>
+              <div>
+                <p>Correct Answer : {{question['answer'][0]}}. {{question['answer'][1]}}</p>
+                <p>Your Answer    : {% if u_ans[loop.index - 1][0] | string == "None" %}
+                  Answer Not Given
+                {% else %}
+                   {{u_ans[loop.index - 1][0]}}. {{u_ans[loop.index - 1][1]}}  {{ '✅' if question['answer'][1] | string == u_ans[loop.index - 1][1] | string else '❌' }}
+                {% endif %}</p>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="navigation">
+        <button type="submit" name="restart">New Quiz</button>
+      </div>
+    </div>
+  </form>
+{% endblock %}

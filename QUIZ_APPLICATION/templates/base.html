@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🧠 Quizy</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='icon.png') }}" >
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" /> <!-- for flask -->
+  <link rel="stylesheet" href="/QUIZ_APPLICATION/static/style.css" /><!-- for normal browser -->
+   {% block script %}
+  
+  {% endblock %} 
+</head>
+<body>
+  <div class="container">
+    <aside class="sidebar">
+      <h1>Quizy</h1>
+      {% if user %}
+      <h4>Hi, {{user}}</h4>
+      {% endif %}
+      <ul>
+        <li><a href="/" class="{% if active_page == 'home'%}active {% endif %}">Home</a></li>
+        <li><a href="/start" class="{% if active_page == 'quiz'%}active {% endif %}">Quiz Zone</a></li>
+        <li><a href="/leaderboard" class="{% if active_page == 'leaderboard'%}active {% endif %}">Leaderboard</a></li>
+        <li><a href="/profile" class="{% if active_page == 'profile'%}active {% endif %}">Profile</a></li>
+      </ul>
+    </aside>
+
+    <main class="quiz-area">
+      {% with messages = get_flashed_messages()  %}
+      {% if messages %}
+      <div class="flash">
+        <ul>
+          {% for msg in messages %}
+            <li>{{msg}}</li>
+          {% endfor %}
+        </ul>
+        <button onclick="document.querySelector('.flash').style.display ='none' ">Ok</button>
+      </div>
+      {% endif %}
+      {% endwith %}
+      {% block content %} 
+      <h2>Wellcome to Quizy </h2>
+      <a id="h_start" href="/start">Start Quiz</a><br><br>
+      <p>&copy; 2025</p>
+      {% endblock %}
+    </main>
+  </div>
+
+</body>
+</html>

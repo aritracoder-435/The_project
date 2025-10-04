@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="quiz-box">
+    <h1>Learderboard</h1>
+    <br>
+    <div class="leader_table ,question-box",>
+        <table>
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Username</th>
+                    <th>Score</th>
+                </tr>
+            </thead>
+                {% for (user,info) in sorted_users %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{user}}</td>
+                        <td>{{info['progress']['score']}}</td>
+                    </tr>
+                {% else %}
+                    No Data Found
+                {% endfor %}
+        </table>
+    </div>
+{% endblock %}

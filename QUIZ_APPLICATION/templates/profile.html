@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="quiz-box">
+        <h1>My Profile</h1>
+        <div class="profile">
+            <p>You spent {{time[0]}} hours {{time[1]}} minutes {{time[2]}} secounds in our application</p>
+            <p>Your Score is {{score}}</p>
+            <p>You attempt total {{asked}} question</p>
+            <p>Your given answer is correct for {{score}} question</p>
+            <p>Your given answer is incorrect for {{asked - score}} question</p>
+            <p>Your percentage {{((score / asked)*100) | int }} %</p>
+        </div>
+    </div>
+    
+{% endblock %}

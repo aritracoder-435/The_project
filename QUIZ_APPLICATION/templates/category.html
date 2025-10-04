@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="quiz-box">
+<form method="POST" action="/start">
+    <h1>Quiz Time!</h1>
+    <div class="question-box">
+        <p class="question">Choose Question Category </p>
+        <ul class="options">
+            <li><input type="radio" id = "optaion1" value="a" name="category" required><label for="optaion1">Bollywood</label> </li>
+            <li><input type="radio" id = "optaion2" value="b" name="category" required><label for="optaion2">History</label></li>
+            <li><input type="radio" id = "optaion3" value="c" name="category" required><label for="optaion3">Science</label></li>
+            <li><input type="radio" id = "optaion4" value="d" name="category" required><label for="optaion4">Sport</label></li>
+            <li><input type="radio" id = "optaion5" value="e" name="category" required><label for="optaion5">Technology</label></li> 
+        </ul>
+    </div>
+    <div class="Qno input-group">
+        <div>
+        <label for="question_no">Total Question</label>
+        <input type="text" id="username" name = "question_no" placeholder="Enter No of question to Practice" required>
+        </div>
+    </div>
+    <div class="navigation">
+    <button type="submit" name="prev">Play Quiz</button>
+    </div>
+</form>
+</div>
+{% endblock %}

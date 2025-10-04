@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="quiz-box">
+  <h1>registration</h1>
+  <form method="post" action="/registration">
+    <div class="input-group">
+      <div>
+        <label for="username">Username</label>
+        <input type="text" id="username" name = "username" placeholder="Enter username" required>
+      </div>
+      <div>
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" placeholder="Enter password" required>
+      </div>
+    </div>
+    <div class="login">
+      <button type="submit" class="login-btn">Register Now</button>
+    </div>
+  </form>
+</div>
+
+{% endblock %}
