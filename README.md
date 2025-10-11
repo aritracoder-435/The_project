@@ -38,7 +38,7 @@ Quizy Website : https://quizy-kucp.onrender.com
       ```bash
       git clone https://github.com/aritracoder-435/The_project.git
       cd Quiz_App
-   2. Create Virtual Environment(Optional but Recomended):
+   2. Create Virtual Environment (Optional But Recomended):
       1. Create :
          ```bash
          python -m venv venv
@@ -50,7 +50,7 @@ Quizy Website : https://quizy-kucp.onrender.com
       pip install -r requirements.txt
    4. Run App :
       ```bash
-      python app.py
+      python Quiz_in_Website.py
 ---
 ## Project Structure
 1. For Terminal :

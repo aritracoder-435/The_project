@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>🧠 Quizy</title>
-  <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='icon.png') }}" >
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='icon.png') }}" >
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" /> <!-- for flask -->
   <link rel="stylesheet" href="/QUIZ_APPLICATION/static/style.css" /><!-- for normal browser -->
    {% block script %}
@@ -16,7 +16,7 @@
     <aside class="sidebar">
       <h1>Quizy</h1>
       {% if user %}
-      <h4>Hi, {{user}}</h4>
+      <h4>Hi, {{user}} <a href="/log_out">Log Out</a> </h4>
       {% endif %}
       <ul>
         <li><a href="/" class="{% if active_page == 'home'%}active {% endif %}">Home</a></li>
@@ -42,7 +42,7 @@
       {% block content %} 
       <h2>Wellcome to Quizy </h2>
       <a id="h_start" href="/start">Start Quiz</a><br><br>
-      <p>&copy; 2025</p>
+      <p>&copy; 2025 Thank you for visiting</p>
       {% endblock %}
     </main>
   </div>

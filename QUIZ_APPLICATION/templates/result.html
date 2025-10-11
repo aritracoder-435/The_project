@@ -21,7 +21,7 @@
               </div>
               <div>
                 <p>Correct Answer : {{question['answer'][0]}}. {{question['answer'][1]}}</p>
-                <p>Your Answer    : {% if u_ans[loop.index - 1][0] | string == "None" %}
+                <p>Your Answer    : {% if u_ans[loop.index - 1] in (['None'], None) %}
                   Answer Not Given
                 {% else %}
                    {{u_ans[loop.index - 1][0]}}. {{u_ans[loop.index - 1][1]}}  {{ '✅' if question['answer'][1] | string == u_ans[loop.index - 1][1] | string else '❌' }}

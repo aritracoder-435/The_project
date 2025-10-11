@@ -71,9 +71,6 @@ def update_progrss(duration,score,asked,username):
     sub["score"] += score
     sub["time_spent"] += duration
     sub["attempt"] += asked
-    sub["correct"] += score
-    sub["incorrect"] += asked - score
-    sub["percentage"] = round((sub["score"])/(sub["attempt"])*100,2)
 
     save_users(data)
 
@@ -109,10 +106,7 @@ def registration():
             "progress": {
                 "time_spent":0,
                 "score": 0,
-                "attempt":0,
-                "correct" : 0,
-                "incorrect" : 0,
-                "percentage" : 0
+                "attempt":0
             }
             }
             save_users(data)
@@ -205,7 +199,8 @@ def quiz():
             session['end'] = time.time()
             score = 0
             for i ,ans in enumerate(session['user_ans']) :
-                if str(ans[-1]).lower() == str(session['iteams'][i]['answer'][1]).lower() :
+                print(session['user_ans'])
+                if str(ans[1]if ans not in (['None'], None) else ' ').lower() == str(session['iteams'][i]['answer'][1]).lower() :
                     score += 1
             session['score'] = score
             session.modified = True
@@ -268,12 +263,17 @@ def profile():
         return render_template('profile.html',
                                active_page = 'profile',
                                user = session['user'] if 'user' in session else ' ',
-                               time = [h,m,s] ,score =user_p['score'] ,
+                               time = [h,m,s] ,
+                               score =user_p['score'] ,
                                asked =user_p['attempt'] )
     else :
         flash("Login to see your profile")
         return redirect(url_for('login'))
 
+@app.route('/log_out')
+def log_out():
+    session.clear()
+    return redirect(url_for('login'))
 
 if __name__ == "__main__" :
     app.run(debug = True)
